@@ -18,7 +18,7 @@ class AdminController extends Controller
         ]);
 
         // Create a new admin user using UserFeeder
-        $user = UserFeeder::createUser([
+        $user = User::createUser([
             'name' => $request->name,
             'email' => $request->email,
             'password' => $request->password,
@@ -35,13 +35,22 @@ class AdminController extends Controller
 
     public function users()
     {
-        $users = User::all();
-        return view('admin.users', compact('users'));
+        $users = User::where('role', '!=', 'rider')
+        ->where(function ($query) {
+            $query->where('role', '!=', 'admin')
+                    ->where('role', '!=', 'supplier')
+
+                  ->orWhere('approved', '!=', true);
+        })
+        ->get();
+        
+
+return view('admin.users', compact('users'));
     }
 
     public function manageRole()
     {
-        $users = User::all();
+        $users = User::where('role', '!=', 'rider')->get();
         $roles = Role::all();
         return view('admin.manage-role', compact(['users','roles']));
     }
