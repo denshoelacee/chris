@@ -30,9 +30,9 @@
 	  		<h1><a href="" class="logo">Admin Dashboard</a></h1>
         <ul class="list-unstyled components mb-5">
 
-            @if(auth()->user()->role == 'Admin')
+            @if(auth()->check() && auth()->user()->role == 'Admin')
                 <li>
-                    <a href="{{ route('adminUsers') }}"><span class="fa fa-users mr-3"></span> Users</a>
+<a href="{{ route('admin.users') }}"><span class="fa fa-users mr-3"></span> Users</a>
                 </li>
                 <li>
                     <a href="{{ route('manageRole') }}"><span class="fa fa-role mr-3"></span> Manage Role</a>

@@ -6,6 +6,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\RiderController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\AdminAuthentication;
+use App\Http\Middleware\SupplierAuthentication; // Import the SupplierAuthentication middleware
 
 /*
 |--------------------------------------------------------------------------
@@ -18,13 +20,11 @@ use App\Http\Controllers\UserController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [AuthController::class, 'loadLogin'])->name('home'); // Keep this line
 
-Route::get('/home', function () {
-    return view('pages/landing-page');
-})->name('home');
+ Route::get('/home', function () {
+     return view('pages/landing-page');
+ })->name('home');
 
 
 Route::get('/about', function () {
@@ -43,25 +43,26 @@ Route::get('/log-in', function () {
 
 Route::get('/register',[AuthController::class,'loadRegister']);
 Route::post('/register',[AuthController::class,'register'])->name('register');
-Route::get('/login',function(){
-    return redirect('/');
-});
+Route::get('/login', [AuthController::class, 'loadLogin'])->name('login');
 
 Route::get('/',[AuthController::class,'loadLogin']);
 Route::post('/login',[AuthController::class,'login'])->name('login');
 Route::get('/logout',[AuthController::class,'logout']);
 
-// ********** Admin Routes *********
-Route::group(['prefix' => 'admin','middleware'=>['web','isAdmin']],function(){
-    Route::get('/dashboard',[AdminController::class,'dashboard']);
+Route::get('/unauthorized', function () {
+    return view('unauthorized');
+})->name('unauthorized');
 
-    Route::get('/users',[AdminController::class,'users'])->name('adminUsers');
-    Route::get('/manage-role',[AdminController::class,'manageRole'])->name('manageRole');
-    Route::post('/update-role',[AdminController::class,'updateRole'])->name('updateRole');
+// ********** Admin Routes *********
+Route::group(['prefix' => 'admin', 'middleware' => [AdminAuthentication::class]], function() {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::get('/manage-role', [AdminController::class, 'manageRole'])->name('manageRole');
+    Route::post('/update-role', [AdminController::class, 'updateRole'])->name('updateRole');
 });
 
 // ********** Supplier Routes *********
-Route::group(['prefix' => 'supplier','middleware'=>['web','isSupplier']],function(){
+Route::group(['prefix' => 'supplier', 'middleware' => ['web', SupplierAuthentication::class]], function(){
     Route::get('/dashboard',[SupplierController::class,'dashboard']);
 });
 
@@ -70,4 +71,12 @@ Route::group(['prefix' => 'rider','middleware'=>['web','isRider']],function(){
     Route::get('/dashboard',[RiderController::class,'dashboard']);
 });
 
+Route::post('/users/{id}/approve', [UserController::class, 'approve'])->name('users.approve');
+Route::post('/users/{id}/reject', [UserController::class, 'reject'])->name('users.reject');
 
+
+/* Route::middleware([AdminAuthentication::class])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
+    // admic access
+}); */

@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
-    //
     public function loadRegister()
     {
         if(Auth::user()){
@@ -20,7 +19,7 @@ class AuthController extends Controller
         return view('/auth/register');
     }
 
-        public function register(Request $request)
+    public function register(Request $request)
     {
         // Validate incoming request data
         $request->validate([
@@ -38,7 +37,7 @@ class AuthController extends Controller
         $user->role = $request->role; // Assign the role
         $user->save();
 
-        return back()->with('success', 'Your registration has been successful.');
+        return redirect('/')->with('success', 'Your registration has been successful.');
     }
 
     public function loadLogin()
@@ -59,20 +58,17 @@ class AuthController extends Controller
 
         $userCredential = $request->only('email','password');
         if(Auth::attempt($userCredential)){
-
             $route = $this->redirectDash();
             return redirect($route);
-        }
-        else{
+        } else {
             return back()->with('error','Username & Password is incorrect');
         }
     }
 
     public function loadDashboard()
     {
-        return view('user.dashboard');
+        return view('admin.dashboard');
     }
-
 
     public function redirectDash()
     {
@@ -80,11 +76,9 @@ class AuthController extends Controller
 
         if(Auth::user() && Auth::user()->role == 'Admin'){
             $redirect = '/admin/dashboard';
-        }
-        else if(Auth::user() && Auth::user()->role == 'Supplier'){
+        } else if(Auth::user() && Auth::user()->role == 'Supplier'){
             $redirect = '/supplier/dashboard';
-        }
-        else if(Auth::user() && Auth::user()->role == 'Rider'){
+        } else if(Auth::user() && Auth::user()->role == 'Rider'){
             $redirect = '/rider/dashboard';
         }
 
@@ -96,5 +90,23 @@ class AuthController extends Controller
         $request->session()->flush();
         Auth::logout();
         return redirect('/');
+    }
+
+    public function approve($id)
+    {
+        $user = User::findOrFail($id);
+        $user->approved = true; // Set approved status to true
+        $user->save();
+
+        return redirect()->back()->with('success', 'User approved successfully.');
+    }
+
+    public function reject($id)
+    {
+        $user = User::findOrFail($id);
+        $user->approved = false; // Set approved status to false
+        $user->save();
+
+        return redirect()->back()->with('success', 'User rejected successfully.');
     }
 }

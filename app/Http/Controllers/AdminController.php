@@ -8,6 +8,25 @@ use App\Models\Role;
 
 class AdminController extends Controller
 {
+    public function createAdminUser(Request $request)
+    {
+        // Validate incoming request data
+        $request->validate([
+            'name' => 'string|required|min:2',
+            'email' => 'string|email|required|max:100|unique:users',
+            'password' => 'string|required|confirmed|min:6',
+        ]);
+
+        // Create a new admin user using UserFeeder
+        $user = UserFeeder::createUser([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->password,
+            'role' => 'Admin', // Assign the role as Admin
+        ]);
+
+        return back()->with('success', 'Admin user created successfully.');
+    }
     //
     public function dashboard()
     {

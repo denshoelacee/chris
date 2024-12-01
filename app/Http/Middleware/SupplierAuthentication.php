@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SupplierAuthentication
 {
@@ -16,10 +17,23 @@ class SupplierAuthentication
      */
     public function handle(Request $request, Closure $next)
     {
-        if(auth()->user() && auth()->user()->role == 'Supplier'){
+        $user = Auth::user();
+
+        // Allow unauthenticated users to access login and register routes
+        if ($request->is('login') || $request->is('register')) {
             return $next($request);
         }
 
-        return redirect('/');
+        // Check if the user is authenticated
+        if (!$user) {
+            return redirect('/login');
+        }
+
+        // Check if the user is approved
+        if (!$user->approved) {
+            return redirect('/unauthorized');
+        }
+
+        return $next($request);
     }
 }
