@@ -38,21 +38,26 @@
                         <td>
                             <form action="{{ route('users.approve', $user->id) }}" method="POST" style="display:inline;">
                                 @csrf
-                                <button type="submit" class="btn btn-success">Approve</button>
+                                <button type="submit" class="w-20 p-1 rounded-lg bg-[#00E03C]">Approve</button>
                             </form>
                             <form action="{{ route('users.reject', $user->id) }}" method="POST" style="display:inline;">
                                 @csrf
-                                <button type="submit" class="btn btn-danger">Reject</button>
+                                <button type="submit" class="w-20 p-1 rounded-lg bg-[#FF0000]">Reject</button>
                             </form>
                         </td>
                     </tr>
                 @endforeach
             </tbody>
         </div>
-        
     </table>
-    
+    <div class="flex justify-between items-center px-4 py-2">
+        <div class="text-sm text-gray-600">
+            Showing {{ $users->count() }} of {{ $users->total() }} results
+        </div>
+        <div class="pagination-links">
+            {{ $users->links('vendor.pagination.tailwind') }}
+        </div>
+    </div>
 </div>
-
 </div>
 @endsection

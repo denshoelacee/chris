@@ -17,10 +17,23 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+
+    protected $p_key = 'id';
+    public $auto_increment = false;
+    protected $data_type = 'string';
+
     protected $fillable = [
+        'id',
         'name',
+        'age',
+        'gender',
+        'phone_num',
+        'barangay',
+        'municipality',
+        'city',
+        'postal',
         'email',
-        'role',
+        'role', 
         'password',
     ];
 
@@ -41,10 +54,24 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-    ];
+    ];  
 
     public function roles()
     {
         return $this->hasOne(Role::class,'id', 'role');
+    }
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'user_id', 'user_id');
+    }
+
+    public function shipments()
+    {
+        return $this->hasMany(Shipment::class, 'user_id', 'user_id');
+    }
+
+    public function riderInfo()
+    {
+        return $this->hasOne(RiderInfo::class, 'user_id', 'user_id');
     }
 }

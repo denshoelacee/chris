@@ -17,8 +17,10 @@ class AdminController extends Controller
             'password' => 'string|required|confirmed|min:6',
         ]);
 
+        $id = $this -> gen_random_adminid();
         // Create a new admin user using UserFeeder
         $user = User::createUser([
+            'id' => $id,
             'name' => $request->name,
             'email' => $request->email,
             'password' => $request->password,
@@ -39,13 +41,11 @@ class AdminController extends Controller
         ->where(function ($query) {
             $query->where('role', '!=', 'admin')
                     ->where('role', '!=', 'supplier')
-
-                  ->orWhere('approved', '!=', true);
+                ->orWhere('approved', '!=', true);
         })
-        ->get();
-        
+        ->paginate(10);
 
-return view('admin.users', compact('users'));
+    return view('admin.users', compact('users'));
     }
 
     public function manageRole()
@@ -70,4 +70,8 @@ return view('admin.users', compact('users'));
         return redirect()->back();
     }
 
+    private function gen_random_adminid()
+    {
+        return random_int(100000, 999999); 
+    }
 }

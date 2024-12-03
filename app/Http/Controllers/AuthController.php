@@ -6,13 +6,12 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
     public function loadRegister()
     {
-        if(Auth::user()){
+        if (Auth::user()) {
             $route = $this->redirectDash();
             return redirect($route);
         }
@@ -21,16 +20,17 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        // Validate incoming request data
         $request->validate([
             'name' => 'string|required|min:2',
             'email' => 'string|email|required|max:100|unique:users',
             'password' => 'string|required|confirmed|min:6',
-            'role' => 'string|required|in:Rider,Admin,Supplier' // Validate role field
+            'role' => 'string|required|in:Rider,Admin,Supplier', 
         ]);
 
-        // Create a new user and assign values
+        $user_id = $this->gen_auto_id();
+
         $user = new User;
+        $user->id = $user_id; // Assign random ID
         $user->name = $request->name;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
@@ -40,9 +40,18 @@ class AuthController extends Controller
         return redirect('/')->with('success', 'Your registration has been successful.');
     }
 
+    private function gen_auto_id()
+    {
+        do {
+            $id = random_int(100000, 999999); 
+        } while (User::where('id', $id)->exists());
+
+        return $id;
+    }
+
     public function loadLogin()
     {
-        if(Auth::user()){
+        if (Auth::user()) {
             $route = $this->redirectDash();
             return redirect($route);
         }
@@ -53,15 +62,15 @@ class AuthController extends Controller
     {
         $request->validate([
             'email' => 'string|required|email',
-            'password' => 'string|required'
+            'password' => 'string|required',
         ]);
 
-        $userCredential = $request->only('email','password');
-        if(Auth::attempt($userCredential)){
+        $userCredential = $request->only('email', 'password');
+        if (Auth::attempt($userCredential)) {
             $route = $this->redirectDash();
             return redirect($route);
         } else {
-            return back()->with('error','Username & Password is incorrect');
+            return back()->with('error', 'Username & Password is incorrect');
         }
     }
 
@@ -74,11 +83,11 @@ class AuthController extends Controller
     {
         $redirect = '';
 
-        if(Auth::user() && Auth::user()->role == 'Admin'){
+        if (Auth::user() && Auth::user()->role == 'Admin') {
             $redirect = '/admin/dashboard';
-        } else if(Auth::user() && Auth::user()->role == 'Supplier'){
+        } elseif (Auth::user() && Auth::user()->role == 'Supplier') {
             $redirect = '/supplier/dashboard';
-        } else if(Auth::user() && Auth::user()->role == 'Rider'){
+        } elseif (Auth::user() && Auth::user()->role == 'Rider') {
             $redirect = '/rider/dashboard';
         }
 

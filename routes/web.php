@@ -8,7 +8,8 @@ use App\Http\Controllers\RiderController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AdminAuthentication;
 use App\Http\Middleware\SupplierAuthentication; // Import the SupplierAuthentication middleware
-
+use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\OrderController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -74,7 +75,8 @@ Route::group(['prefix' => 'rider','middleware'=>['web','isRider']],function(){
 Route::post('/users/{id}/approve', [UserController::class, 'approve'])->name('users.approve');
 Route::post('/users/{id}/reject', [UserController::class, 'reject'])->name('users.reject');
 
-
+Route::resource('inventory', InventoryController::class);
+Route::resource('orders', OrderController::class);
 /* Route::middleware([AdminAuthentication::class])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');

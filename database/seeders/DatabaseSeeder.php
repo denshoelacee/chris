@@ -3,8 +3,13 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\User; // Import User model
-use Illuminate\Support\Facades\Hash; // Import Hash facade
+use Database\Seeders\UserSeeder;
+use Database\Seeders\InventorySeeder;
+use Database\Seeders\OrderSeeder;
+use Database\Seeders\ShipmentSeeder;
+use Database\Seeders\RiderInfoSeeder;
+
+
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,55 +18,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create an admin user manually
-        User::create([
-            'name' => 'Admin 1User',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'), // Use a secure password in production
-            'role' => 'Admin',
-            'approved' => 1, // Set approved status to true
-        ]);
-        User::create([
-            'name' => 'Admin2 User',
-            'email' => 'admin1@example.com',
-            'password' => Hash::make('password1'), // Use a secure password in production
-            'role' => 'Admin',
-            'approved' => 0, // Set approved status to true
-        ]);
-
-        User::create([
-            'name' => 'Admin 3User',
-            'email' => 'admin2@example.com',
-            'password' => Hash::make('password2'), // Use a secure password in production
-            'role' => 'Admin',
-            'approved' => 0, // Set approved status to true
-        ]);
-
-        User::create([
-            'name' => 'Admin 4User',
-            'email' => 'admin3@example.com',
-            'password' => Hash::make('password3'), // Use a secure password in production
-            'role' => 'Admin',
-            'approved' => 0, // Set approved status to true
-        ]);
-
-        User::create([
-            'name' => 'Admin 5User',
-            'email' => 'admin4@example.com',
-            'password' => Hash::make('password4'), // Use a secure password in production
-            'role' => 'Admin',
-            'approved' => 0, // Set approved status to true
-        ]);
-
-        User::create([
-            'name' => 'Admin 6User',
-            'email' => 'Supplier@example.com',
-            'password' => Hash::make('password5'), // Use a secure password in production
-            'role' => 'Supplier',
-            'approved' => 0, // Set approved status to true
-        ]);
-
-
         // \App\Models\User::factory(10)->create();
+
+        // \App\Models\User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
+        
+
+        $this->call([
+            UserSeeder::class,
+            InventorySeeder::class,
+            OrderSeeder::class,
+            ShipmentSeeder::class,
+            RiderInfoSeeder::class,
+        ]);
     }
 }
